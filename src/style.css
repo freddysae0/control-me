@@ -23,38 +23,6 @@ html, body {
   height: 100%;
 }
 
-/* ── Hidden MediaPipe source video ───────────────────────────────────────── */
-#input-video {
-  position: fixed;
-  opacity: 0;
-  pointer-events: none;
-  width: 1px;
-  height: 1px;
-}
-
-/* ── PiP webcam preview ──────────────────────────────────────────────────── */
-#pip-video {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 180px;
-  aspect-ratio: 4/3;
-  border-radius: 12px;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  background: #111;
-  object-fit: cover;
-  /* Mirror so it feels natural */
-  transform: scaleX(-1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.05);
-  transition: opacity 0.4s;
-  z-index: 10;
-}
-
-/* Hide PiP when no stream yet */
-#pip-video:not([srcObject]) {
-  opacity: 0;
-}
-
 /* ── Overlay ─────────────────────────────────────────────────────────────── */
 #ui-overlay {
   position: fixed;
@@ -89,7 +57,7 @@ html, body {
 
 @keyframes pulse {
   0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.05); }
+  50%       { opacity: 0.9; transform: scale(1.05); }
 }
 
 .overlay-content h1 {
@@ -122,21 +90,4 @@ html, body {
   background: linear-gradient(90deg, #4a80f0, #a0c4ff);
   border-radius: 2px;
   transition: width 0.4s ease;
-}
-
-.hint {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
-  line-height: 1.5;
-  letter-spacing: 0.03em;
-}
-
-/* ── Responsive PiP ─────────────────────────────────────────────────────── */
-@media (max-width: 600px) {
-  #pip-video {
-    width: 110px;
-    bottom: 12px;
-    right: 12px;
-    border-radius: 8px;
-  }
 }

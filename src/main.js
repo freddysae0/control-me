@@ -1,19 +1,16 @@
 import { createScene } from './scene.js';
-import { Avatar } from './avatar.js';
-import { FaceTracker } from './faceTracker.js';
+import { Avatar }      from './avatar.js';
+import { Ragdoll }     from './ragdoll.js';
 
-// ── DOM refs ─────────────────────────────────────────────────────────────────
-const canvas = document.getElementById('canvas');
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+const canvas    = document.getElementById('canvas');
 const overlayEl = document.getElementById('ui-overlay');
-const statusEl = document.getElementById('overlay-status');
-const hintEl = document.getElementById('overlay-hint');
-const fillEl = document.getElementById('loading-fill');
+const statusEl  = document.getElementById('overlay-status');
+const fillEl    = document.getElementById('loading-fill');
 
 function setStatus(msg, progress = null) {
   statusEl.textContent = msg;
-  if (progress !== null) {
-    fillEl.style.width = `${Math.round(progress * 100)}%`;
-  }
+  if (progress !== null) fillEl.style.width = `${Math.round(progress * 100)}%`;
 }
 
 function fadeOutOverlay() {
@@ -25,57 +22,40 @@ function fadeOutOverlay() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
-  // 1. Scene
-  setStatus('Building scene…', 0.1);
+  setStatus('Building scene…', 0.15);
   const { renderer, scene, camera, composer } = createScene(canvas);
 
-  // 2. Avatar
-  setStatus('Loading avatar…', 0.25);
+  setStatus('Loading avatar…', 0.4);
   const avatar = new Avatar();
+  let ragdoll  = null;
+
   try {
     await avatar.load(scene);
-    setStatus('Avatar loaded.', 0.5);
+    setStatus('Building physics…', 0.85);
+
+    if (avatar.hipsBone) {
+      ragdoll = new Ragdoll(avatar.rootObject, avatar.hipsBone, camera, canvas);
+    } else {
+      console.warn('[Main] No hips bone — ragdoll disabled.');
+    }
+
+    setStatus('Drag any bone!', 1.0);
+    setTimeout(fadeOutOverlay, 1200);
   } catch (err) {
     console.error('[Main] Avatar load failed:', err);
-    setStatus('⚠ Avatar not found. Place avatar.glb in public/');
-    // Continue — we'll still show the scene without an avatar
+    setStatus('⚠ Avatar not found — place avatar.glb in public/');
   }
 
-  // 3. MediaPipe
-  const tracker = new FaceTracker();
-  try {
-    await tracker.init((msg) => setStatus(msg, 0.7));
-    setStatus('Requesting camera…', 0.85);
-  } catch (err) {
-    console.error('[Main] FaceTracker init failed:', err);
-    setStatus('⚠ MediaPipe failed to load.');
-  }
+  // ── Animation loop ──────────────────────────────────────────────────────────
+  let prevTime = performance.now();
 
-  // 4. Webcam
-  let inputVideo = null;
-  if (tracker.isReady) {
-    try {
-      hintEl.style.display = 'block';
-      inputVideo = await tracker.startWebcam();
-      hintEl.style.display = 'none';
-      setStatus('Tracking…', 1.0);
-      setTimeout(fadeOutOverlay, 800);
-    } catch (err) {
-      console.error('[Main] Webcam access denied:', err);
-      setStatus('⚠ Camera access denied. Enable camera and reload.');
-    }
-  }
-
-  // 5. Animation loop
   renderer.setAnimationLoop(() => {
-    if (inputVideo && tracker.isReady) {
-      const { blendshapes, matrix, poseWorldLandmarks } = tracker.detect(inputVideo);
-      avatar.applyBlendShapes(blendshapes);
-      avatar.rotateHead(matrix);
-      avatar.applyPose(poseWorldLandmarks);
-    }
+    const now = performance.now();
+    const dt  = (now - prevTime) / 1000;  // seconds
+    prevTime  = now;
 
-    // Only use composer.render(), never renderer.render()
+    if (ragdoll) ragdoll.step(dt);
+
     composer.render();
   });
 }

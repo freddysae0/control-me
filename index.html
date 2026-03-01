@@ -4,18 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Control Me — Freddy's Portfolio</title>
+  <title>Ragdoll — Freddy's Portfolio</title>
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
 <body>
   <canvas id="canvas"></canvas>
-
-  <!-- Hidden video used as MediaPipe source -->
-  <video id="input-video" autoplay playsinline muted></video>
-
-  <!-- Picture-in-picture webcam preview (mirrored) -->
-  <video id="pip-video" autoplay playsinline muted></video>
 
   <!-- Instruction / status overlay -->
   <div id="ui-overlay">
@@ -31,14 +25,11 @@
             stroke-linecap="round" />
         </svg>
       </div>
-      <h1>Control Me</h1>
-      <p id="overlay-status">Loading avatar model…</p>
+      <h1>Ragdoll</h1>
+      <p id="overlay-status">Loading avatar…</p>
       <div id="loading-bar">
         <div id="loading-fill"></div>
       </div>
-      <p class="hint" id="overlay-hint" style="display:none">
-        Allow camera access to begin face tracking
-      </p>
     </div>
   </div>
 
