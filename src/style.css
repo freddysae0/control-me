@@ -1,0 +1,142 @@
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0f;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  color: #fff;
+}
+
+/* ── Full-screen canvas ───────────────────────────────────────────────────── */
+#canvas {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Hidden MediaPipe source video ───────────────────────────────────────── */
+#input-video {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+
+/* ── PiP webcam preview ──────────────────────────────────────────────────── */
+#pip-video {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 180px;
+  aspect-ratio: 4/3;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: #111;
+  object-fit: cover;
+  /* Mirror so it feels natural */
+  transform: scaleX(-1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.05);
+  transition: opacity 0.4s;
+  z-index: 10;
+}
+
+/* Hide PiP when no stream yet */
+#pip-video:not([srcObject]) {
+  opacity: 0;
+}
+
+/* ── Overlay ─────────────────────────────────────────────────────────────── */
+#ui-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(10,10,20,0.92) 0%, rgba(5,5,10,0.98) 100%);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  transition: opacity 0.6s ease;
+}
+
+#ui-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+  text-align: center;
+}
+
+.status-icon {
+  opacity: 0.7;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.05); }
+}
+
+.overlay-content h1 {
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.95);
+  text-transform: uppercase;
+}
+
+#overlay-status {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  min-height: 1.2em;
+}
+
+/* ── Loading bar ─────────────────────────────────────────────────────────── */
+#loading-bar {
+  width: 200px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#loading-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4a80f0, #a0c4ff);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.hint {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+}
+
+/* ── Responsive PiP ─────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  #pip-video {
+    width: 110px;
+    bottom: 12px;
+    right: 12px;
+    border-radius: 8px;
+  }
+}
