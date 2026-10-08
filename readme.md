@@ -2,6 +2,8 @@
 
 Real-time face-tracking 3D avatar demo. Your webcam drives a GLB character — head rotation, facial expressions, and arm movement all update live in the browser.
 
+<p align="center"><img src="docs/avatar.png" alt="The GLB avatar rendered with bloom, waiting for the webcam" width="420"></p>
+
 ## How it works
 
 - **MediaPipe** (`@mediapipe/tasks-vision`) runs `FaceLandmarker` + `PoseLandmarker` on each video frame
